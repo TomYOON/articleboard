@@ -4,3 +4,17 @@ spring:
         url: jdbc:mysql://localhost:3306/articleboard?serverTimezone=UTC&characterEncoding=UTF-8
         username: root
         password: afsd
+    jpa:
+        hibernate:
+            ddl-auto: create
+        properties:
+            hibernate:
+                #        show_sql: true #시스템 out으로 찍기때문에 아래 log로 찍는 방식이 더 올바름
+                format_sql: true
+                default_batch_fetch_size: 100
+#    open-in-view: false
+
+logging:
+    level:
+        org.hibernate.SQL: debug
+#    org.hibernate.type: trace
