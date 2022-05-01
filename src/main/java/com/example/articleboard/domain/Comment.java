@@ -15,7 +15,7 @@ public class Comment {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_code")
+    @JoinColumn(name = "member_id")
     private Member writer;
 
     @ManyToOne

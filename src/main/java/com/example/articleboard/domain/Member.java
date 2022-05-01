@@ -12,11 +12,12 @@ import java.util.List;
 public class Member {
 
     @Id
-    @Column(name = "member_code")
+    @Column(name = "member_id")
     @GeneratedValue
-    private Long memberCode;
+    private Long id;
 
-    private String id;
+    @Column(unique = true)
+    private String email;
     private String password;
     private String nick;
     private String imgUrl;

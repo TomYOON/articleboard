@@ -13,7 +13,7 @@ public class Article {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_code")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     private String subject;
