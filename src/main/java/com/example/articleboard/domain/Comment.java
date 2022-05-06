@@ -12,6 +12,7 @@ public class Comment {
 
     @Id
     @Column(name = "comment_id")
+    @GeneratedValue
     private Long id;
 
     @ManyToOne
