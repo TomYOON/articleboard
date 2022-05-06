@@ -22,9 +22,9 @@ public class Member {
     private String nick;
     private String imgUrl;
 
-    @OneToMany(mappedBy = "member")
-    private List<Article> articles = new ArrayList<>();
-
-    @OneToMany(mappedBy = "writer")
-    private List<Comment> comments = new ArrayList<>();
+//    @OneToMany(mappedBy = "member")
+//    private List<Article> articles = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "writer")
+//    private List<Comment> comments = new ArrayList<>();
 }
