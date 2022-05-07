@@ -1,6 +1,7 @@
 package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Comment;
+import com.example.articleboard.dto.CommentDto;
 import com.example.articleboard.service.CommentService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,23 +22,7 @@ public class CommentApiController {
 
     private final CommentService commentService;
 
-    @Data
-    static class CommentDto {
-        private String memberNick;
-        private String articleSubject;
-        private String tagMemberNick;
-        private String content;
 
-
-        public CommentDto(Comment comment) {
-            memberNick = comment.getMember().getNick();
-            content = comment.getContent();
-            articleSubject = comment.getArticle().getSubject();
-            if (comment.getTagMember() != null) {
-                tagMemberNick = comment.getTagMember().getNick();
-            }
-        }
-    }
 
     @GetMapping("api/comments/member/{memberId}")
     public List<CommentDto> commentsMember(@PathVariable("memberId") Long memberId,

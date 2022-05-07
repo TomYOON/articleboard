@@ -1,16 +1,20 @@
 package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Article;
+import com.example.articleboard.dto.ArticleDto;
+import com.example.articleboard.dto.MemberDto;
 import com.example.articleboard.service.ArticleService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,12 +26,14 @@ public class ArticleApiController {
      * 리턴 타입 DTO로 바꿔줘야됨
      */
     @GetMapping("api/articles")
-    public List<Article> articles(@RequestParam(value = "offset", defaultValue = "0") int offset,
-                                  @RequestParam(value = "limit", defaultValue = "10") int limit) {
+    public List<ArticleDto> articles(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                     @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
         List<Article> articles = articleService.findArticles(offset, limit);
-
-        return articles;
+        List<ArticleDto> articleDtos = articles.stream()
+                .map(a -> new ArticleDto(a))
+                .collect(Collectors.toList());
+        return articleDtos;
     }
 
     @PostMapping("api/article")
@@ -50,4 +56,5 @@ public class ArticleApiController {
         private String subject;
         private String content;
     }
+
 }
