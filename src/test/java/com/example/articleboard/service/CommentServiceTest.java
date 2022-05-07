@@ -45,8 +45,9 @@ public class CommentServiceTest {
         Comment comment = commentRepository.findOne(commentId);
 
         //then
-        assertEquals("부모 댓글이 없으면 id 와 parentId가 같아야 한다.", comment.getId(), comment.getParentComment().getId());
-
+        assertEquals(member, comment.getMember());
+        assertEquals(article, comment.getArticle());
+        assertEquals(content, comment.getContent());
     }
 
     @Test
