@@ -8,17 +8,20 @@ import com.example.articleboard.repository.CommentRepository;
 import com.example.articleboard.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommentService {
 
     private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     public Long write(Long memberId, Long articleId, Long parentId, Long tagMemberId, String content) {
         Member member = memberRepository.findOne(memberId);
         Article article = articleRepository.findOne(articleId);
