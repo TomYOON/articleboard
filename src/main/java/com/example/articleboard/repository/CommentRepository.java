@@ -24,4 +24,14 @@ public class CommentRepository {
     public List<Comment> findAll() {
         return em.createQuery("select c from Comment c",Comment.class).getResultList();
     }
+
+    public List<Comment> findByMemberId(long memberId, int offset, int limit) {
+        return em.createQuery("select c from Comment c" +
+                            " join fetch c.member m" +
+                            " where m.id = :memberId", Comment.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
