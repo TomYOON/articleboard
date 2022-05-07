@@ -71,8 +71,6 @@ public class Comment {
 
         if (parentComment != null) {
             comment.setParentComment(parentComment);
-        } else {
-            comment.setParentComment(comment);
         }
 
         if (tagMember != null) {
