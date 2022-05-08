@@ -43,6 +43,13 @@ public class CommentApiController {
         return new CreateCommentResponse(commentId);
     }
 
+    @PutMapping("api/comment/{commentId}")
+    @ResponseBody
+    public UpdateCommentResponse updateComment(@PathVariable("commentId") Long commentId, @RequestBody @Valid UpdateCommentRequest request) {
+        Long id = commentService.updateComment(commentId, request.getContent());
+        return new UpdateCommentResponse(id);
+    }
+
 
     @Data
     @AllArgsConstructor
@@ -61,6 +68,18 @@ public class CommentApiController {
         private Long parentId;
         @Nullable
         private Long tagMemberId;
+        @NotEmpty
+        private String content;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class UpdateCommentResponse {
+        private Long id;
+    }
+
+    @Data
+    static class UpdateCommentRequest {
         @NotEmpty
         private String content;
     }

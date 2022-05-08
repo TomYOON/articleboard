@@ -3,6 +3,7 @@ package com.example.articleboard.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -58,8 +59,13 @@ public class Comment {
         this.tagMember = tagMember;
     }
 
-    public void setContent(String content) {
+    private void setContent(String content) {
         this.content = content;
+    }
+
+    //== 수정 메서드 ==//
+    public void updateContent(String content) {
+        setContent(content);
     }
 
     //== 생성 메서드 ==//

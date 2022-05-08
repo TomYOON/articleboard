@@ -45,4 +45,12 @@ public class CommentService {
     public List<Comment> findCommentByMemberId(Long memberId, int offset, int limit) {
         return commentRepository.findByMemberId(memberId, offset, limit);
     }
+
+    @Transactional
+    public Long updateComment(Long commentId, String content) {
+        Comment comment = commentRepository.findOne(commentId);
+        comment.updateContent(content);
+
+        return comment.getId();
+    }
 }
