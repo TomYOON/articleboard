@@ -7,9 +7,12 @@ import com.example.articleboard.service.ArticleService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.NonNullFields;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -42,6 +45,27 @@ public class ArticleApiController {
         return new CreateArticleResponse(articleId);
     }
 
+    @GetMapping("api/article/{articleId}")
+    @ResponseBody
+    public ArticleDto detailArticle(@PathVariable("articleId") Long articleId) {
+        Article article = articleService.getArticleDetail(articleId);
+        if (article == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
+        }
+        return new ArticleDto(article);
+    }
+
+    @PutMapping("api/article/{articleId}")
+    @ResponseBody
+    public UpdateArticleResponse updateArticle(@PathVariable("articleId") Long articleId,
+                                               @RequestBody @Valid UpdateArticleRequest request) {
+        Long id = articleService.updateArticle(articleId, request.getSubject(), request.getContent());
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
+        }
+        return new UpdateArticleResponse(id);
+    }
+
     @Data
     @AllArgsConstructor
     static class CreateArticleResponse {
@@ -57,4 +81,17 @@ public class ArticleApiController {
         private String content;
     }
 
+    @Data
+    @AllArgsConstructor
+    static class UpdateArticleResponse {
+        private Long id;
+    }
+
+    @Data
+    static class UpdateArticleRequest {
+        @NonNull
+        private String subject;
+        @NonNull
+        private String content;
+    }
 }

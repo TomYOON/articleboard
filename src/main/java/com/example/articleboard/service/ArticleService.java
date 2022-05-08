@@ -32,4 +32,18 @@ public class ArticleService {
     public List<Article> findArticles(int offset, int limmit) {
         return articleRepository.findAllWithMemberAndComment(offset,limmit);
     }
+
+    public Article getArticleDetail(Long articleId) {
+        return articleRepository.findOne(articleId);
+    }
+
+    @Transactional
+    public Long updateArticle(Long articleId, String subject, String content) {
+        Article article = articleRepository.findOne(articleId);
+        if (article == null) {
+            return null;
+        }
+        article.updateArticle(subject, content);
+        return article.getId();
+    }
 }

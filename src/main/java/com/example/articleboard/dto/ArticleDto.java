@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 @Data
 public class ArticleDto {
     @NonNull
+    Long articleId;
+    @NonNull
     private MemberDto memberDto;
     @NonNull
     private String subject;
@@ -19,6 +21,7 @@ public class ArticleDto {
     private List<CommentDto> commentDtos;
 
     public ArticleDto(Article article) {
+        articleId = article.getId();
         memberDto = new MemberDto(article.getMember());
         subject = article.getSubject();
         content = article.getContent();

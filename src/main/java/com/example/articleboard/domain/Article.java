@@ -1,5 +1,6 @@
 package com.example.articleboard.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter(AccessLevel.PROTECTED)
 public class Article {
 
     @Id
@@ -25,6 +27,12 @@ public class Article {
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
+
+    //== 변경 메서드 ==//
+    public void updateArticle(String subject, String content) {
+        setSubject(subject);
+        setContent(content);
+    }
 
     //== 생성 메서드 ==//
     public static Article createArticle(Member member, String subject, String content) {
