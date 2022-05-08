@@ -91,7 +91,7 @@ public class ArticleApiController {
     static class UpdateArticleRequest {
         @NonNull
         private String subject;
-        @NonNull
+        @NotEmpty
         private String content;
     }
 }
