@@ -36,9 +36,15 @@ public class Comment {
     private Member tagMember;
 
     private String content;
+    private Boolean isDeleted;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
     private List<Comment> childComments = new ArrayList<>();
+
+    @PrePersist
+    private void prePersist() {
+        this.isDeleted = !(this.isDeleted == null);
+    }
 
     //== 연관관계 메서드 ==//
     private void setMember(Member member) {
@@ -84,6 +90,12 @@ public class Comment {
         }
 
         return comment;
+    }
+
+    //== 삭제 메서드 ==//
+    public void deleteComment() {
+        isDeleted = true;
+        content = null;
     }
 
 }

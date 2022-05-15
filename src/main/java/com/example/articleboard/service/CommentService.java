@@ -53,4 +53,39 @@ public class CommentService {
 
         return comment.getId();
     }
+
+    /**
+     * 대댓글이 있거나 멤버가 태그된 댓글(대대댓글)은 데이터가 삭제되지 않고 isDeleted에 표시
+     * @param commentId
+     * @return commentId
+     */
+    @Transactional
+    public Long deleteComment(Long commentId) {
+        Comment comment = commentRepository.findOne(commentId);
+
+        if(comment == null) {
+            return null;
+        }
+
+        if (comment.getChildComments().isEmpty() && !isTaggedMemberComment(comment)) {
+            commentRepository.delete(comment);
+        } else {
+            comment.deleteComment();
+        }
+        return commentId;
+    }
+
+    /**
+     * 해당 댓글의 작성자가 태그된지 확인
+     * @param comment
+     * @return
+     */
+    private boolean isTaggedMemberComment(Comment comment) {
+        Comment parentComment = comment.getParentComment();
+
+        if (parentComment == null) {
+            return false;
+        }
+        return parentComment.getChildComments().stream().anyMatch(c -> c.getTagMember() == comment.getMember());
+    }
 }

@@ -34,4 +34,8 @@ public class CommentRepository {
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    public void delete(Comment comment) {
+        em.remove(comment);
+    }
 }

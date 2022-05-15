@@ -34,8 +34,9 @@ public class CommentServiceTest {
     public void 댓글작성() throws Exception {
         //given
         Member member = Member.createMember("testEmail", "1234", "ts", null);
-        em.persist(member);
         Article article = Article.createArticle(member, "제목", "내용");
+
+        em.persist(member);
         em.persist(article);
 
         String content = "댓글 내용";
@@ -78,6 +79,29 @@ public class CommentServiceTest {
         //then
         assertEquals("memberId로 조회한 댓글목록의 첫 번째는 최근에 작성한 댓글과 같아야 한다.", member1Comments.get(0), comment1);
         assertEquals("memberId로 조회한 댓글목록의 첫 번째는 최근에 작성한 댓글과 같아야 한다.", member2Comments.get(0), comment2);
+    }
+
+    @Test
+    public void 댓글_삭제() throws Exception {
+        //given
+        Member member = Member.createMember("testEmail", "1234", "ts", null);
+        Article article = Article.createArticle(member, "제목", "내용");
+
+        em.persist(member);
+        em.persist(article);
+
+        String content1 = "자식이 있는 댓글 내용";
+        String content2 = "멤버가 테그된 댓글 내용";
+        String content3 = "삭제 가능한 댓글 내용";
+
+        //when
+        Long commentId1 = commentService.write(member.getId(), article.getId(), null, null, content1);
+        Comment comment1 = commentRepository.findOne(commentId1);
+        Long commentId2 = commentService.write(member.getId(), article.getId(), comment1.getId(), null, content1);
+        Comment comment2 = commentRepository.findOne(commentId2);
+        Long commentId3 = commentService.write(member.getId(), article.getId(), comment1.getId(), null, content1);
+        //then
+
     }
 
 
