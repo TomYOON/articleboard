@@ -26,7 +26,8 @@ public class MemberService implements UserDetailsService {
      */
     @Transactional
     public Long join(Member member) {
-        validateDuplicateUsername(member);
+//        validateDuplicateUsername(member);
+        member.encryptPassword(passwordEncoder);
         memberRepository.save(member);
         return member.getId();
     }
