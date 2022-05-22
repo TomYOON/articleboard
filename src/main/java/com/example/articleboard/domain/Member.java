@@ -36,7 +36,7 @@ public class Member {
         this.imgUrl = imgUrl;
     }
     //== 생성 메서드 ==//
-    public static Member createMember(String email, String password, String nick, String imgUrl) {
-        return new Member(email, password, nick, imgUrl);
+    public static Member createMember(String username, String password, String nick, String imgUrl) {
+        return new Member(username, password, nick, imgUrl);
     }
 }
