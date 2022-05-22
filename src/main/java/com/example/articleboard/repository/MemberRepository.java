@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import java.security.PublicKey;
 import java.util.List;
 
 @Repository
@@ -23,9 +21,9 @@ public class MemberRepository {
         return em.find(Member.class, id);
     }
 
-    public List<Member> findByEmail(String email) {
-        return em.createQuery("select m from Member m where m.email = :email", Member.class)
-                .setParameter("email", email)
+    public List<Member> findByUsername(String username) {
+        return em.createQuery("select m from Member m where m.username = :username", Member.class)
+                .setParameter("username", username)
                 .getResultList();
     }
 

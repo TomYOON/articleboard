@@ -18,7 +18,7 @@ public class MemberDto {
 
     public MemberDto(Member member) {
         memberId = member.getId();
-        email = member.getEmail();
+        email = member.getUsername();
         nick = member.getNick();
         imgUrl = member.getImgUrl();
     }

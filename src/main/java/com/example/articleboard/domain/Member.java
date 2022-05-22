@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -20,7 +18,7 @@ public class Member {
     private Long id;
 
     @Column(unique = true)
-    private String email;
+    private String username;
     private String password;
     private String nick;
     private String imgUrl;
@@ -31,8 +29,8 @@ public class Member {
 //    @OneToMany(mappedBy = "writer")
 //    private List<Comment> comments = new ArrayList<>();
 
-    private Member(String email, String password, String nick, String imgUrl) {
-        this.email = email;
+    private Member(String username, String password, String nick, String imgUrl) {
+        this.username = username;
         this.password = password;
         this.nick = nick;
         this.imgUrl = imgUrl;

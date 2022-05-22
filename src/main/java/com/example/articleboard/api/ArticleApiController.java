@@ -2,15 +2,12 @@ package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Article;
 import com.example.articleboard.dto.ArticleDto;
-import com.example.articleboard.dto.MemberDto;
 import com.example.articleboard.service.ArticleService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.NonNullFields;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 

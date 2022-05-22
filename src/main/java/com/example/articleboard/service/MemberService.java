@@ -21,13 +21,13 @@ public class MemberService {
      */
     @Transactional
     public Long join(Member member) {
-        validateDuplicateEmail(member);
+        validateDuplicateUsername(member);
         memberRepository.save(member);
         return member.getId();
     }
 
-    private void validateDuplicateEmail(Member member) {
-        List<Member> findMember = memberRepository.findByEmail(member.getEmail());
+    private void validateDuplicateUsername(Member member) {
+        List<Member> findMember = memberRepository.findByUsername(member.getUsername());
 
         if (!findMember.isEmpty()) {
             throw new IllegalStateException("이미 존재하는 회원입니다.");

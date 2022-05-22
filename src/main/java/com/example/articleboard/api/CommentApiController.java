@@ -22,8 +22,6 @@ public class CommentApiController {
 
     private final CommentService commentService;
 
-
-
     @GetMapping("api/comments/member/{memberId}")
     public List<CommentDto> commentsMember(@PathVariable("memberId") Long memberId,
                                            @RequestParam(value = "offset", defaultValue = "0") int offset,
