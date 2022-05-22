@@ -21,10 +21,14 @@ public class MemberRepository {
         return em.find(Member.class, id);
     }
 
-    public List<Member> findByUsername(String username) {
-        return em.createQuery("select m from Member m where m.username = :username", Member.class)
-                .setParameter("username", username)
-                .getResultList();
+    public Member findByUsername(String username) {
+        List<Member> members = em.createQuery("select m from Member m where m.username = :username", Member.class)
+                .setParameter("username", username).getResultList();
+        if (members.isEmpty()) {
+            return null;
+        }
+        return members.get(0);
+
     }
 
     public List<Member> findAll() {

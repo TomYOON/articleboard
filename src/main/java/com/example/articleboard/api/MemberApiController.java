@@ -2,6 +2,7 @@ package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Member;
 import com.example.articleboard.dto.MemberDto;
+import com.example.articleboard.form.JoinForm;
 import com.example.articleboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +30,8 @@ public class MemberApiController {
     }
 
     @PostMapping("api/member")
-    public Long saveMember(@RequestBody @Valid Member member) {
-        Long id = memberService.join(member);
+    public Long saveMember(@RequestBody @Valid JoinForm form) {
+        Long id = memberService.join(Member.createMember(form.getUsername(), form.getPassword(), form.getNick(), null));
         return id;
     }
 }
