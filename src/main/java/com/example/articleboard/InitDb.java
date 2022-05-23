@@ -1,6 +1,7 @@
 package com.example.articleboard;
 
 import com.example.articleboard.domain.Member;
+import com.example.articleboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +24,12 @@ public class InitDb {
     @RequiredArgsConstructor
     static class InitService {
 
-        final private EntityManager em;
+        final private MemberService memberService;
 
         public void createAdmin() {
             Member admin = Member.createMember("admin", "admin", "admin", null);
 			admin.setRoleToAdmin();
-            em.persist(admin);
+            memberService.join(admin);
         }
     }
 }

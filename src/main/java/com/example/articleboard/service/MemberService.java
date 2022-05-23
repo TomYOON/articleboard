@@ -3,6 +3,8 @@ package com.example.articleboard.service;
 import com.example.articleboard.domain.Member;
 import com.example.articleboard.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -26,7 +30,7 @@ public class MemberService implements UserDetailsService {
      */
     @Transactional
     public Long join(Member member) {
-//        validateDuplicateUsername(member);
+        validateDuplicateUsername(member);
         member.encryptPassword(passwordEncoder);
         memberRepository.save(member);
         return member.getId();
@@ -47,6 +51,13 @@ public class MemberService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByUsername(username);
-        return null;
+
+        if (member == null) {
+            throw new UsernameNotFoundException("User not found in the database");
+        }
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(member.getRole().toString()));
+
+        return new User(member.getUsername(), member.getPassword(), authorities);
     }
 }

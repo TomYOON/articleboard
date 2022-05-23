@@ -1,5 +1,7 @@
 package com.example.articleboard.security;
 
+import com.example.articleboard.domain.Role;
+import com.example.articleboard.security.filter.CustomAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,9 +34,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), new JwtTokenUtils());
+        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
+
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().antMatchers("/**").permitAll();
+        http.authorizeRequests().antMatchers("/api/login/**").permitAll();
+        http.authorizeRequests().antMatchers(POST, "/api/member/**").permitAll();
+        http.authorizeRequests().antMatchers("/api/members/**").permitAll();
+        http.authorizeRequests().anyRequest().authenticated();
+        http.addFilter(customAuthenticationFilter);
     }
 
     @Bean
@@ -42,4 +51,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws  Exception {
         return super.authenticationManagerBean();
     }
+
+//    @Bean
+//    public JwtTokenUtils jwtTokenUtils2() throws Exception {
+//        return new JwtTokenUtils();
+//    }
 }
