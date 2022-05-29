@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +35,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
 
-            String authorizationHeader = request.getHeader(AUTHORIZATION);
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+//            String authorizationHeader = request.getHeader(AUTHORIZATION);
+            String token = jwtTokenUtils.getTokenInCookie(request);
+
+            if (token != null) {
                 try {
-                    String token = authorizationHeader.substring("Bearer ".length());
                     jwtTokenUtils.setToken(token);
                     String username = jwtTokenUtils.getUsername();
                     Collection<SimpleGrantedAuthority> authorities = jwtTokenUtils.getAuthorities();
