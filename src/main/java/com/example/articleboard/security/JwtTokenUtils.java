@@ -4,15 +4,15 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -23,6 +23,16 @@ public class JwtTokenUtils {
     final String issuer = "articleboard.example.com";
     final int ACCESS_TOKEN_EXPIRATION_TIME = 30 * 60 * 1000;
     final int REFRESH_TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+
+    String token;
+    JWTVerifier verifier;
+    DecodedJWT decodedJWT;
+
+    public void setToken(String token) {
+        this.token = token;
+        verifier = JWT.require(algorithm).build();
+        decodedJWT = verifier.verify(token);
+    }
 
     private String createToken(Authentication authentication, int expirationTime) {
         User user = (User) authentication.getPrincipal();
@@ -43,11 +53,17 @@ public class JwtTokenUtils {
         return createToken(authentication, REFRESH_TOKEN_EXPIRATION_TIME);
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getUsername() {
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(token);
         String username = decodedJWT.getSubject();
 
         return username;
+    }
+
+    public Collection<SimpleGrantedAuthority> getAuthorities() {
+        String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        return Arrays.stream(roles).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 }
