@@ -28,4 +28,13 @@ public class ArticleRepository {
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    public List<Article> findMemberArticles(Long memberId, int offset, int limit) {
+        return em.createQuery("select a from Article a" +
+                        " join fetch a.member m where m.id = :memberId", Article.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }

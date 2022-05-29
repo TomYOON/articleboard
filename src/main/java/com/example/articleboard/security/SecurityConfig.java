@@ -42,8 +42,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers("/api/login/**").permitAll();
-        http.authorizeRequests().antMatchers(POST, "/api/member/**").hasAnyAuthority(Role.USER.toString());
+        http.authorizeRequests().antMatchers("/api/articles/**").permitAll();
+        http.authorizeRequests().antMatchers("/api/article/**").permitAll();
+        http.authorizeRequests().antMatchers(POST, "/api/member/**").permitAll();
         http.authorizeRequests().antMatchers("/api/members/**").hasAnyAuthority(Role.ADMIN.toString());
+//        http.authorizeRequests().antMatchers("/api/members/**").access();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(jwtTokenUtils), UsernamePasswordAuthenticationFilter.class);

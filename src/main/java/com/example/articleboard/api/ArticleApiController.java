@@ -5,6 +5,7 @@ import com.example.articleboard.dto.ArticleDto;
 import com.example.articleboard.service.ArticleService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -61,6 +62,17 @@ public class ArticleApiController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
         }
         return new UpdateArticleResponse(id);
+    }
+
+    @GetMapping("api/articles/member/{memberId}")
+    public List<ArticleDto> getMemberArticles(@PathVariable("memberId") Long memberId,
+                                              @RequestParam(value = "offset", defaultValue = "0") int offset,
+                                              @RequestParam(value = "limit", defaultValue = "10") int limit) {
+        List<Article> articles = articleService.findMemberArticles(memberId, offset, limit);
+        List<ArticleDto> articleDtos = articles.stream()
+                .map(a -> new ArticleDto(a))
+                .collect(Collectors.toList());
+        return articleDtos;
     }
 
     @Data

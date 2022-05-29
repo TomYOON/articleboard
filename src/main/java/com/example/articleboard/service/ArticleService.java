@@ -29,8 +29,12 @@ public class ArticleService {
         return article.getId();
     }
 
-    public List<Article> findArticles(int offset, int limmit) {
-        return articleRepository.findAllWithMemberAndComment(offset,limmit);
+    public List<Article> findArticles(int offset, int limit) {
+        return articleRepository.findAllWithMemberAndComment(offset,limit);
+    }
+
+    public List<Article> findMemberArticles(long memberId, int offset, int limit) {
+        return articleRepository.findMemberArticles(memberId, offset, limit);
     }
 
     public Article getArticleDetail(Long articleId) {
