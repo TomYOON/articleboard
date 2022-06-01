@@ -38,7 +38,7 @@ class ArticleServiceTest {
         String content = "글 내용입니다.";
 
         //when
-        Long articleId = articleService.write(member.getId(), subject, content);
+        Long articleId = articleService.write(member.getUsername(), subject, content);
         Article article = articleRepository.findOne(articleId);
 
         //then

@@ -2,13 +2,14 @@ package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Article;
 import com.example.articleboard.dto.ArticleDto;
+import com.example.articleboard.security.JwtTokenUtils;
 import com.example.articleboard.service.ArticleService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.NonNull;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,57 +23,59 @@ import java.util.stream.Collectors;
 public class ArticleApiController {
 
     private final ArticleService articleService;
+    final private JwtTokenUtils jwtTokenUtils;
 
-    /** TODO:
-     * 리턴 타입 DTO로 바꿔줘야됨
-     */
     @GetMapping("api/articles")
-    public List<ArticleDto> articles(@RequestParam(value = "offset", defaultValue = "0") int offset,
-                                     @RequestParam(value = "limit", defaultValue = "10") int limit) {
+    public ResponseEntity<List<ArticleDto>> articles(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                                    @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
         List<Article> articles = articleService.findArticles(offset, limit);
         List<ArticleDto> articleDtos = articles.stream()
                 .map(a -> new ArticleDto(a))
                 .collect(Collectors.toList());
-        return articleDtos;
+        return ResponseEntity.ok().body(articleDtos);
     }
 
     @PostMapping("api/article")
-    public CreateArticleResponse saveArticle(@RequestBody @Valid CreateArticleRequest request) {
-        Long articleId = articleService.write(request.memberId, request.subject, request.content);
-        return new CreateArticleResponse(articleId);
+    @PreAuthorize("#request.username == authentication.name")
+    public ResponseEntity<CreateArticleResponse> saveArticle(@RequestBody @Valid CreateArticleRequest request) {
+        Long articleId = articleService.write(request.username, request.subject, request.content);
+        return ResponseEntity.ok().body(new CreateArticleResponse(articleId));
     }
 
     @GetMapping("api/article/{articleId}")
     @ResponseBody
-    public ArticleDto detailArticle(@PathVariable("articleId") Long articleId) {
+    public ResponseEntity<ArticleDto> detailArticle(@PathVariable("articleId") Long articleId) {
         Article article = articleService.getArticleDetail(articleId);
         if (article == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
         }
-        return new ArticleDto(article);
+        return ResponseEntity.ok().body(new ArticleDto(article));
     }
 
     @PutMapping("api/article/{articleId}")
     @ResponseBody
-    public UpdateArticleResponse updateArticle(@PathVariable("articleId") Long articleId,
+    public ResponseEntity<UpdateArticleResponse> updateArticle(@PathVariable("articleId") Long articleId,
+                                               @CookieValue(name = "ACCESS_TOKEN") String token,
                                                @RequestBody @Valid UpdateArticleRequest request) {
-        Long id = articleService.updateArticle(articleId, request.getSubject(), request.getContent());
+        String username = jwtTokenUtils.getUsername(token);
+        System.out.println(username);
+        Long id = articleService.updateArticle(articleId, username, request.getSubject(), request.getContent());
         if (id == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
         }
-        return new UpdateArticleResponse(id);
+        return ResponseEntity.ok().body(new UpdateArticleResponse(id));
     }
 
     @GetMapping("api/articles/member/{memberId}")
-    public List<ArticleDto> getMemberArticles(@PathVariable("memberId") Long memberId,
+    public ResponseEntity<List<ArticleDto>> getMemberArticles(@PathVariable("memberId") Long memberId,
                                               @RequestParam(value = "offset", defaultValue = "0") int offset,
                                               @RequestParam(value = "limit", defaultValue = "10") int limit) {
         List<Article> articles = articleService.findMemberArticles(memberId, offset, limit);
         List<ArticleDto> articleDtos = articles.stream()
                 .map(a -> new ArticleDto(a))
                 .collect(Collectors.toList());
-        return articleDtos;
+        return ResponseEntity.ok().body(articleDtos);
     }
 
     @Data
@@ -84,7 +87,8 @@ public class ArticleApiController {
     @Data
     static class CreateArticleRequest {
 //        @NotEmpty 지원되는 타입에 Long은 없음(default value가 있기때문인거같다)
-        private Long memberId;
+        @NotEmpty
+        private String username;
         @NotEmpty
         private String subject;
         private String content;
@@ -98,7 +102,7 @@ public class ArticleApiController {
 
     @Data
     static class UpdateArticleRequest {
-        @NonNull
+        @NotEmpty
         private String subject;
         @NotEmpty
         private String content;

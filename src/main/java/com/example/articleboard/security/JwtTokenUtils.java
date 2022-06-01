@@ -30,16 +30,7 @@ public class JwtTokenUtils {
     final int REFRESH_TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
     final String ACCESS_TOKEN_KEY = "ACCESS_TOKEN";
     final String REFRESH_TOKEN_KEY = "REFRESH_TOKEN";
-
-    String token;
-    JWTVerifier verifier;
-    DecodedJWT decodedJWT;
-
-    public void setToken(String token) {
-        this.token = token;
-        verifier = JWT.require(algorithm).build();
-        decodedJWT = verifier.verify(token);
-    }
+    final JWTVerifier verifier = JWT.require(algorithm).build();
 
     private String createToken(Authentication authentication, int expirationTime) {
         User user = (User) authentication.getPrincipal();
@@ -60,15 +51,15 @@ public class JwtTokenUtils {
         return createToken(authentication, REFRESH_TOKEN_EXPIRATION_TIME);
     }
 
-    public String getUsername() {
-        JWTVerifier verifier = JWT.require(algorithm).build();
+    public String getUsername(String token) {
         DecodedJWT decodedJWT = verifier.verify(token);
         String username = decodedJWT.getSubject();
 
         return username;
     }
 
-    public Collection<SimpleGrantedAuthority> getAuthorities() {
+    public Collection<SimpleGrantedAuthority> getAuthorities(String token) {
+        DecodedJWT decodedJWT = verifier.verify(token);
         String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         return Arrays.stream(roles).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
@@ -81,8 +72,7 @@ public class JwtTokenUtils {
         response.addCookie(refreshTokenCookie);
     }
 
-    public String getTokenInCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
+    public String getTokenInCookie(Cookie[] cookies) {
         if (cookies == null) {
             return null;
         }

@@ -16,8 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity
@@ -39,15 +38,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), jwtTokenUtils);
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
 
+        http.logout()
+            .logoutUrl("/api/logout")
+            .deleteCookies(jwtTokenUtils.ACCESS_TOKEN_KEY, jwtTokenUtils.REFRESH_TOKEN_KEY);
+
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().antMatchers("/api/login/**").permitAll();
-        http.authorizeRequests().antMatchers("/api/articles/**").permitAll();
-        http.authorizeRequests().antMatchers("/api/article/**").permitAll();
-        http.authorizeRequests().antMatchers(POST, "/api/member/**").permitAll();
+        http.authorizeRequests().antMatchers("/api/login/**", "api/member/**").permitAll();
+
+        //article
+        http.authorizeRequests().antMatchers("/api/articles/**").permitAll()
+                                .antMatchers(GET, "/api/article/**").permitAll()
+                                .antMatchers(POST, "/api/article/**").authenticated()
+                                .antMatchers(PUT, "/api/article/**").authenticated();
+
+//                                .antMatchers(PUT, "/api/article/**").access("@webSecurity.validateMemberId(authentication, request)");
+
+
+
         http.authorizeRequests().antMatchers("/api/members/**").hasAnyAuthority(Role.ADMIN.toString());
-//        http.authorizeRequests().antMatchers("/api/members/**").access();
-        http.authorizeRequests().anyRequest().authenticated();
+//        http.authorizeRequests().anyRequest().authenticated();
+
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(jwtTokenUtils), UsernamePasswordAuthenticationFilter.class);
     }
