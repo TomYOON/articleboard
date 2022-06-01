@@ -48,6 +48,10 @@ public class MemberService implements UserDetailsService {
         return memberRepository.findAll();
     }
 
+    public Member findMember(Long memberId) {
+        return memberRepository.findOne(memberId);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByUsername(username);
@@ -58,6 +62,6 @@ public class MemberService implements UserDetailsService {
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(member.getRole().toString()));
 
-        return new User(member.getUsername(), member.getPassword(), authorities);
+        return new User(member.getId().toString(), member.getPassword(), authorities);
     }
 }

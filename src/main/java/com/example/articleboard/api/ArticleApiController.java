@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,9 +38,9 @@ public class ArticleApiController {
     }
 
     @PostMapping("api/article")
-    @PreAuthorize("#request.username == authentication.name")
+    @PreAuthorize("#request.memberId.toString().equals(authentication.name)")
     public ResponseEntity<CreateArticleResponse> saveArticle(@RequestBody @Valid CreateArticleRequest request) {
-        Long articleId = articleService.write(request.username, request.subject, request.content);
+        Long articleId = articleService.write(request.memberId, request.subject, request.content);
         return ResponseEntity.ok().body(new CreateArticleResponse(articleId));
     }
 
@@ -58,9 +59,8 @@ public class ArticleApiController {
     public ResponseEntity<UpdateArticleResponse> updateArticle(@PathVariable("articleId") Long articleId,
                                                @CookieValue(name = "ACCESS_TOKEN") String token,
                                                @RequestBody @Valid UpdateArticleRequest request) {
-        String username = jwtTokenUtils.getUsername(token);
-        System.out.println(username);
-        Long id = articleService.updateArticle(articleId, username, request.getSubject(), request.getContent());
+        Long memberId = Long.parseLong(jwtTokenUtils.getSubject(token));
+        Long id = articleService.updateArticle(articleId, memberId, request.getSubject(), request.getContent());
         if (id == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
         }
@@ -87,8 +87,8 @@ public class ArticleApiController {
     @Data
     static class CreateArticleRequest {
 //        @NotEmpty 지원되는 타입에 Long은 없음(default value가 있기때문인거같다)
-        @NotEmpty
-        private String username;
+        @NotNull
+        private Long memberId;
         @NotEmpty
         private String subject;
         private String content;

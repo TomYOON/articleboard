@@ -18,7 +18,7 @@ public class InitDb {
     @PostConstruct
     public void init() {
         Long adminId = initService.createAdmin();
-        Long articleId = initService.createAdminArticle();
+        Long articleId = initService.createAdminArticle(adminId);
     }
 
     @Component
@@ -37,11 +37,11 @@ public class InitDb {
             return id;
         }
 
-        public Long createAdminArticle() {
+        public Long createAdminArticle(Long memberId) {
             String subject = "공지 사항";
             String content = "공지 사항";
 
-            Long id = articleService.write("admin", subject, content);
+            Long id = articleService.write(memberId, subject, content);
 
             return id;
         }

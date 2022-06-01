@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,11 +50,11 @@ public class JwtTokenUtils {
         return createToken(authentication, REFRESH_TOKEN_EXPIRATION_TIME);
     }
 
-    public String getUsername(String token) {
+    public String getSubject(String token) {
         DecodedJWT decodedJWT = verifier.verify(token);
-        String username = decodedJWT.getSubject();
+        String subject = decodedJWT.getSubject();
 
-        return username;
+        return subject;
     }
 
     public Collection<SimpleGrantedAuthority> getAuthorities(String token) {

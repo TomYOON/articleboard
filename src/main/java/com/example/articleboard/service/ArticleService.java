@@ -21,9 +21,9 @@ public class ArticleService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Long write(String username, String subject, String content) {
+    public Long write(Long memberId, String subject, String content) {
 
-        Member member = memberRepository.findByUsername(username);
+        Member member = memberRepository.findOne(memberId);
         Article article = Article.createArticle(member, subject, content);
 
         articleRepository.save(article);
@@ -43,12 +43,12 @@ public class ArticleService {
     }
 
     @Transactional
-    public Long updateArticle(Long articleId, String username, String subject, String content) throws ResourceAccessException {
+    public Long updateArticle(Long articleId, Long memberId, String subject, String content) throws ResourceAccessException {
         Article article = articleRepository.findOne(articleId);
         if (article == null) {
             return null;
         }
-        if (!article.getMember().getUsername().equals(username)) {
+        if (!article.getMember().getId().equals(memberId)) {
             throw new ResourceAccessException("게시글의 작성자가 아닙니다.");
         }
 
