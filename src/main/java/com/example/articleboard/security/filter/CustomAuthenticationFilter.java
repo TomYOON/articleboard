@@ -12,7 +12,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,7 +28,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     private final JwtTokenUtils jwtTokenUtils;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         UsernamePasswordAuthenticationToken authenticationToken;
@@ -39,7 +37,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         return authenticationManager.authenticate(authenticationToken);
     }
 
@@ -51,7 +48,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         jwtTokenUtils.setTokenInCookie(response, accessToken, refreshToken);
 
         Map<String, String> result = new HashMap<>();
-        result.put("result", "success");
+        result.put("memberId", authentication.getName());
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), result);
     }

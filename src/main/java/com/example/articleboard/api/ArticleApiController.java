@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,9 +58,9 @@ public class ArticleApiController {
     @PutMapping("api/article/{articleId}")
     @ResponseBody
     public ResponseEntity<UpdateArticleResponse> updateArticle(@PathVariable("articleId") Long articleId,
-                                               @CookieValue(name = "ACCESS_TOKEN") String token,
-                                               @RequestBody @Valid UpdateArticleRequest request) {
-        Long memberId = Long.parseLong(jwtTokenUtils.getSubject(token));
+                                                               @RequestBody @Valid UpdateArticleRequest request,
+                                                               Principal principal) {
+        Long memberId = Long.parseLong(principal.getName());
         Long id = articleService.updateArticle(articleId, memberId, request.getSubject(), request.getContent());
         if (id == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
