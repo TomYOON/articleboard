@@ -27,13 +27,12 @@ public class JwtTokenUtils {
     final String issuer = "articleboard.example.com";
     final int ACCESS_TOKEN_EXPIRATION_TIME = 30 * 60 * 1000;
     final int REFRESH_TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
-    final String ACCESS_TOKEN_KEY = "ACCESS_TOKEN";
-    final String REFRESH_TOKEN_KEY = "REFRESH_TOKEN";
+    public final static String ACCESS_TOKEN_KEY = "ACCESS_TOKEN";
+    public final static String REFRESH_TOKEN_KEY = "REFRESH_TOKEN";
     final JWTVerifier verifier = JWT.require(algorithm).build();
 
     private String createToken(Authentication authentication, int expirationTime) {
         User user = (User) authentication.getPrincipal();
-
         return JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
