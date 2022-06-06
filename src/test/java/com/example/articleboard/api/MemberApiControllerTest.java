@@ -3,6 +3,7 @@ package com.example.articleboard.api;
 import com.example.articleboard.domain.Member;
 import com.example.articleboard.dto.LoginDto;
 import com.example.articleboard.dto.JoinDto;
+import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.repository.MemberRepository;
 import com.example.articleboard.security.JwtTokenUtils;
 import com.example.articleboard.service.MemberService;
@@ -26,6 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -45,7 +47,6 @@ class MemberApiControllerTest {
 //    @Autowired
 //    private WebTestClient webClient;
 
-    private String BASE_URL = "/api/member";
 
     @BeforeEach
     public void setUp() {
@@ -62,7 +63,7 @@ class MemberApiControllerTest {
     @DisplayName("회원가입이 정상적으로 되는 것과 비밀번호가 암호화 되어 저장되는지 확인한다.")
     public void 회원가입() throws Exception {
         //given
-        String username = "test@test.com";
+        String username = "test123@test.com";
         String password = "123456";
         JoinDto form = JoinDto.builder()
                         .username(username)
@@ -71,7 +72,7 @@ class MemberApiControllerTest {
         String body = mapper.writeValueAsString(form);
 
         //when then
-        mvc.perform(MockMvcRequestBuilders.post(BASE_URL)
+        mvc.perform(MockMvcRequestBuilders.post(UriConfig.Member.BASE)
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -89,10 +90,10 @@ class MemberApiControllerTest {
         String body = mapper.writeValueAsString(new LoginDto(username, password));
 
         //when then
-        mvc.perform(MockMvcRequestBuilders.post("/api/login")
+        mvc.perform(MockMvcRequestBuilders.post(UriConfig.LOGIN)
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(cookie().exists(JwtTokenUtils.ACCESS_TOKEN_KEY));
     }
