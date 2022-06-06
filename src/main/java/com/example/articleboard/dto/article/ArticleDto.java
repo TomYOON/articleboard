@@ -1,6 +1,8 @@
-package com.example.articleboard.dto;
+package com.example.articleboard.dto.article;
 
 import com.example.articleboard.domain.Article;
+import com.example.articleboard.dto.comment.CommentDto;
+import com.example.articleboard.dto.member.MemberDto;
 import lombok.Data;
 import org.springframework.lang.NonNull;
 

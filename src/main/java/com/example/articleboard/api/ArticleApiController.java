@@ -1,7 +1,7 @@
 package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Article;
-import com.example.articleboard.dto.ArticleDto;
+import com.example.articleboard.dto.article.*;
 import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.security.JwtTokenUtils;
 import com.example.articleboard.service.ArticleService;
@@ -41,9 +41,9 @@ public class ArticleApiController {
 
     @PostMapping(UriConfig.Article.ARTICLES)
     @PreAuthorize("#request.memberId.toString().equals(authentication.name)")
-    public ResponseEntity<CreateArticleResponse> saveArticle(@RequestBody @Valid CreateArticleRequest request) {
-        Long articleId = articleService.write(request.memberId, request.subject, request.content);
-        return ResponseEntity.ok().body(new CreateArticleResponse(articleId));
+    public ResponseEntity<CreateArticleResponseDto> saveArticle(@RequestBody @Valid CreateArticleRequestDto request) {
+        Long articleId = articleService.write(request.getMemberId(), request.getSubject(), request.getContent());
+        return ResponseEntity.ok().body(new CreateArticleResponseDto(articleId));
     }
 
     @GetMapping(UriConfig.Article.ARTICLE_ID)
@@ -58,15 +58,15 @@ public class ArticleApiController {
 
     @PutMapping(UriConfig.Article.ARTICLE_ID)
     @ResponseBody
-    public ResponseEntity<UpdateArticleResponse> updateArticle(@PathVariable("articleId") Long articleId,
-                                                               @RequestBody @Valid UpdateArticleRequest request,
-                                                               Principal principal) {
+    public ResponseEntity<UpdateArticleResponseDto> updateArticle(@PathVariable("articleId") Long articleId,
+                                                                  @RequestBody @Valid UpdateArticleRequestDto request,
+                                                                  Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
         Long id = articleService.updateArticle(articleId, memberId, request.getSubject(), request.getContent());
         if (id == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
         }
-        return ResponseEntity.ok().body(new UpdateArticleResponse(id));
+        return ResponseEntity.ok().body(new UpdateArticleResponseDto(id));
     }
 
     @GetMapping(UriConfig.Article.MEMBER_ARTICLES)
@@ -80,32 +80,4 @@ public class ArticleApiController {
         return ResponseEntity.ok().body(articleDtos);
     }
 
-    @Data
-    @AllArgsConstructor
-    static class CreateArticleResponse {
-        private Long id;
-    }
-
-    @Data
-    static class CreateArticleRequest {
-        @NotNull
-        private Long memberId;
-        @NotEmpty
-        private String subject;
-        private String content;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class UpdateArticleResponse {
-        private Long id;
-    }
-
-    @Data
-    static class UpdateArticleRequest {
-        @NotEmpty
-        private String subject;
-        @NotEmpty
-        private String content;
-    }
 }

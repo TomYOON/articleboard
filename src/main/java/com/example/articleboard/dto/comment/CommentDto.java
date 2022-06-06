@@ -1,4 +1,4 @@
-package com.example.articleboard.dto;
+package com.example.articleboard.dto.comment;
 
 import com.example.articleboard.domain.Comment;
 import lombok.Data;

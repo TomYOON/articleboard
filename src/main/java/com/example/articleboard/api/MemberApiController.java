@@ -1,9 +1,9 @@
 package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Member;
-import com.example.articleboard.dto.MemberDto;
+import com.example.articleboard.dto.member.MemberDto;
 import com.example.articleboard.env.UriConfig;
-import com.example.articleboard.form.JoinForm;
+import com.example.articleboard.dto.JoinDto;
 import com.example.articleboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +30,7 @@ public class MemberApiController {
 
     @PostMapping(UriConfig.Member.MEMBERS)
     @ResponseBody
-    public MemberDto saveMember(@RequestBody @Valid JoinForm form) {
+    public MemberDto saveMember(@RequestBody @Valid JoinDto form) {
         Long id = memberService.join(Member.createMember(form.getUsername(), form.getPassword(), form.getNick(), null));
         return MemberDto.builder().username(form.getUsername()).memberId(id).build();
     }

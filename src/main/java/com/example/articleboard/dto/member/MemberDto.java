@@ -1,6 +1,7 @@
-package com.example.articleboard.dto;
+package com.example.articleboard.dto.member;
 
 import com.example.articleboard.domain.Member;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.NonNull;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
+@Builder
 public class MemberDto {
     @NonNull
     private Long memberId;

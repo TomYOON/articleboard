@@ -1,16 +1,15 @@
-package com.example.articleboard.form;
+package com.example.articleboard.dto;
 
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
-public class JoinForm {
+public class JoinDto {
     @NotBlank
     @Length(min = 5)
     private String username;

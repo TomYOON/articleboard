@@ -1,7 +1,7 @@
 package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Comment;
-import com.example.articleboard.dto.CommentDto;
+import com.example.articleboard.dto.comment.*;
 import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.service.CommentService;
 import lombok.AllArgsConstructor;
@@ -61,44 +61,5 @@ public class CommentApiController {
                 .collect(Collectors.toList());
 
         return result;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class CreateCommentResponse {
-        private Long commentId;
-    }
-
-    @Data
-    @Getter
-    static class CreateCommentRequest {
-        @NotNull
-        private Long memberId;
-        @NotNull
-        private Long articleId;
-        @Nullable
-        private Long parentId;
-        @Nullable
-        private Long tagMemberId;
-        @NotEmpty
-        private String content;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class UpdateCommentResponse {
-        private Long id;
-    }
-
-    @Data
-    static class UpdateCommentRequest {
-        @NotEmpty
-        private String content;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class DeleteCommentResponse {
-        private Long id;
     }
 }

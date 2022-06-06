@@ -2,35 +2,26 @@ package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Member;
 import com.example.articleboard.dto.LoginDto;
-import com.example.articleboard.form.JoinForm;
+import com.example.articleboard.dto.JoinDto;
 import com.example.articleboard.repository.MemberRepository;
 import com.example.articleboard.security.JwtTokenUtils;
 import com.example.articleboard.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.servlet.http.Cookie;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,7 +64,7 @@ class MemberApiControllerTest {
         //given
         String username = "test@test.com";
         String password = "123456";
-        JoinForm form = JoinForm.builder()
+        JoinDto form = JoinDto.builder()
                         .username(username)
                         .password(password)
                         .nick("테스트 유저").build();
