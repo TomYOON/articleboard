@@ -21,14 +21,14 @@ import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController(UriConfig.API_BASE)
+@RestController
+@RequestMapping(UriConfig.Article.BASE)
 @RequiredArgsConstructor
 public class ArticleApiController {
 
     private final ArticleService articleService;
-    final private JwtTokenUtils jwtTokenUtils;
 
-    @GetMapping(UriConfig.Article.ARTICLES)
+    @GetMapping
     public ResponseEntity<List<ArticleDto>> articles(@RequestParam(value = "offset", defaultValue = "0") int offset,
                                                     @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
@@ -39,8 +39,8 @@ public class ArticleApiController {
         return ResponseEntity.ok().body(articleDtos);
     }
 
-    @PostMapping(UriConfig.Article.ARTICLES)
-    @PreAuthorize("#request.memberId.toString().equals(authentication.name)")
+    @PostMapping
+//    @PreAuthorize("#request.memberId.toString().equals(authentication.name)")
     public ResponseEntity<CreateArticleResponseDto> saveArticle(@RequestBody @Valid CreateArticleRequestDto request) {
         Long articleId = articleService.write(request.getMemberId(), request.getSubject(), request.getContent());
         return ResponseEntity.ok().body(new CreateArticleResponseDto(articleId));

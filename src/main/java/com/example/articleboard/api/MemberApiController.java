@@ -6,19 +6,22 @@ import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.dto.JoinDto;
 import com.example.articleboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController(UriConfig.API_BASE)
+@RestController
+@RequestMapping(UriConfig.Member.BASE)
 @RequiredArgsConstructor
+@Slf4j
 public class MemberApiController {
 
     private final MemberService memberService;
 
-    @GetMapping(UriConfig.Member.MEMBERS)
+    @GetMapping("/")
     @ResponseBody
     public List<MemberDto> members() {
 
@@ -28,7 +31,7 @@ public class MemberApiController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping(UriConfig.Member.MEMBERS)
+    @PostMapping
     @ResponseBody
     public MemberDto saveMember(@RequestBody @Valid JoinDto form) {
         Long id = memberService.join(Member.createMember(form.getUsername(), form.getPassword(), form.getNick(), null));

@@ -6,19 +6,19 @@ public class UriConfig {
     public static final String LOGOUT = API_BASE + "logout";
 
     public static class Member {
-        public static final String MEMBERS = "/members";
-        public static final String PROFILE = MEMBERS + "/{memberId}/profile";
+        public static final String BASE = API_BASE + "/members";
+        public static final String PROFILE = "/{memberId}/profile";
     }
 
     public static class Article {
-        public static final String ARTICLES = "/articles";
-        public static final String ARTICLE_ID = ARTICLES + "/{articleId}";
-        public static final String MEMBER_ARTICLES = ARTICLES + "/{memberId}";
+        public static final String BASE = API_BASE + "/articles";
+        public static final String ARTICLE_ID = "/{articleId}";
+        public static final String MEMBER_ARTICLES = "/{memberId}";
     }
 
     public static class Comment {
-        public static final String COMMENTS = "/comments";
-        public static final String COMMENT_ID = COMMENTS + "/{commentId}";
-        public static final String MEMBER_COMMENTS = COMMENTS + "/member/{memberId}";
+        public static final String BASE = API_BASE + "/comments";
+        public static final String COMMENT_ID =  "/{commentId}";
+        public static final String MEMBER_COMMENTS = "/member/{memberId}";
     }
 }

@@ -4,30 +4,25 @@ import com.example.articleboard.domain.Comment;
 import com.example.articleboard.dto.comment.*;
 import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.service.CommentService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController(UriConfig.API_BASE)
+@RestController
+@RequestMapping(UriConfig.Comment.BASE)
 @RequiredArgsConstructor
 @Slf4j
 public class CommentApiController {
 
     private final CommentService commentService;
 
-    @PostMapping(UriConfig.Comment.COMMENTS)
+    @PostMapping("/")
     @ResponseBody
     @PreAuthorize("#request.memberId.toString().equals(authentication.name)")
     public CreateCommentResponse saveComment(@RequestBody @Valid CreateCommentRequest request) {
@@ -35,7 +30,7 @@ public class CommentApiController {
         return new CreateCommentResponse(commentId);
     }
 
-    @PutMapping(UriConfig.Comment.COMMENT_ID)
+    @PutMapping("/")
     @ResponseBody
     public UpdateCommentResponse updateComment(@PathVariable("commentId") Long commentId, @RequestBody @Valid UpdateCommentRequest request) {
         Long id = commentService.updateComment(commentId, request.getContent());
