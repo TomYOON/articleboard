@@ -1,6 +1,7 @@
 package com.example.articleboard.security;
 
 import com.example.articleboard.domain.Role;
+import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.security.filter.CustomAuthenticationFilter;
 import com.example.articleboard.security.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), jwtTokenUtils);
-        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
+        customAuthenticationFilter.setFilterProcessesUrl(UriConfig.LOGIN);
 
         http.logout()
-            .logoutUrl("/api/logout")
+            .logoutUrl(UriConfig.LOGOUT)
             .deleteCookies(jwtTokenUtils.ACCESS_TOKEN_KEY, jwtTokenUtils.REFRESH_TOKEN_KEY);
 
         http.csrf().disable();
@@ -52,11 +53,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 .antMatchers(POST, "/api/article/**").authenticated()
                                 .antMatchers(PUT, "/api/article/**").authenticated();
 
-//                                .antMatchers(PUT, "/api/article/**").access("@webSecurity.validateMemberId(authentication, request)");
-
-
-
         http.authorizeRequests().antMatchers("/api/members/**").hasAnyAuthority(Role.ADMIN.toString());
+
+        http.authorizeRequests().antMatchers(DELETE, "/api/comment/**").authenticated();
 //        http.authorizeRequests().anyRequest().authenticated();
 
         http.addFilter(customAuthenticationFilter);

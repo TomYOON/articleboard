@@ -2,6 +2,7 @@ package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Article;
 import com.example.articleboard.dto.ArticleDto;
+import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.security.JwtTokenUtils;
 import com.example.articleboard.service.ArticleService;
 import lombok.AllArgsConstructor;
@@ -20,14 +21,14 @@ import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
+@RestController(UriConfig.API_BASE)
 @RequiredArgsConstructor
 public class ArticleApiController {
 
     private final ArticleService articleService;
     final private JwtTokenUtils jwtTokenUtils;
 
-    @GetMapping("api/articles")
+    @GetMapping(UriConfig.Article.ARTICLES)
     public ResponseEntity<List<ArticleDto>> articles(@RequestParam(value = "offset", defaultValue = "0") int offset,
                                                     @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
@@ -38,14 +39,14 @@ public class ArticleApiController {
         return ResponseEntity.ok().body(articleDtos);
     }
 
-    @PostMapping("api/article")
+    @PostMapping(UriConfig.Article.ARTICLES)
     @PreAuthorize("#request.memberId.toString().equals(authentication.name)")
     public ResponseEntity<CreateArticleResponse> saveArticle(@RequestBody @Valid CreateArticleRequest request) {
         Long articleId = articleService.write(request.memberId, request.subject, request.content);
         return ResponseEntity.ok().body(new CreateArticleResponse(articleId));
     }
 
-    @GetMapping("api/article/{articleId}")
+    @GetMapping(UriConfig.Article.ARTICLE_ID)
     @ResponseBody
     public ResponseEntity<ArticleDto> detailArticle(@PathVariable("articleId") Long articleId) {
         Article article = articleService.getArticleDetail(articleId);
@@ -55,7 +56,7 @@ public class ArticleApiController {
         return ResponseEntity.ok().body(new ArticleDto(article));
     }
 
-    @PutMapping("api/article/{articleId}")
+    @PutMapping(UriConfig.Article.ARTICLE_ID)
     @ResponseBody
     public ResponseEntity<UpdateArticleResponse> updateArticle(@PathVariable("articleId") Long articleId,
                                                                @RequestBody @Valid UpdateArticleRequest request,
@@ -68,7 +69,7 @@ public class ArticleApiController {
         return ResponseEntity.ok().body(new UpdateArticleResponse(id));
     }
 
-    @GetMapping("api/articles/member/{memberId}")
+    @GetMapping(UriConfig.Article.MEMBER_ARTICLES)
     public ResponseEntity<List<ArticleDto>> getMemberArticles(@PathVariable("memberId") Long memberId,
                                               @RequestParam(value = "offset", defaultValue = "0") int offset,
                                               @RequestParam(value = "limit", defaultValue = "10") int limit) {
@@ -87,7 +88,6 @@ public class ArticleApiController {
 
     @Data
     static class CreateArticleRequest {
-//        @NotEmpty 지원되는 타입에 Long은 없음(default value가 있기때문인거같다)
         @NotNull
         private Long memberId;
         @NotEmpty

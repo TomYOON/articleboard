@@ -2,25 +2,24 @@ package com.example.articleboard.api;
 
 import com.example.articleboard.domain.Member;
 import com.example.articleboard.dto.MemberDto;
+import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.form.JoinForm;
 import com.example.articleboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
+@RestController(UriConfig.API_BASE)
 @RequiredArgsConstructor
 public class MemberApiController {
 
     private final MemberService memberService;
 
-    @GetMapping("api/members")
+    @GetMapping(UriConfig.Member.MEMBERS)
+    @ResponseBody
     public List<MemberDto> members() {
 
         List<Member> allMembers = memberService.findALlMembers();
@@ -29,9 +28,17 @@ public class MemberApiController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping("api/member")
-    public Long saveMember(@RequestBody @Valid JoinForm form) {
+    @PostMapping(UriConfig.Member.MEMBERS)
+    @ResponseBody
+    public MemberDto saveMember(@RequestBody @Valid JoinForm form) {
         Long id = memberService.join(Member.createMember(form.getUsername(), form.getPassword(), form.getNick(), null));
-        return id;
+        return MemberDto.builder().username(form.getUsername()).memberId(id).build();
+    }
+
+    @GetMapping(UriConfig.Member.PROFILE)
+    @ResponseBody
+    public MemberDto getProfile(@PathVariable("memberId") Long memberId) {
+        Member member = memberService.findMember(memberId);
+        return new MemberDto(member);
     }
 }
