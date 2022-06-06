@@ -40,7 +40,7 @@ public class ArticleApiController {
     }
 
     @PostMapping
-//    @PreAuthorize("#request.memberId.toString().equals(authentication.name)")
+    @PreAuthorize("#request.memberId.toString().equals(authentication.name)")
     public ResponseEntity<CreateArticleResponseDto> saveArticle(@RequestBody @Valid CreateArticleRequestDto request) {
         Long articleId = articleService.write(request.getMemberId(), request.getSubject(), request.getContent());
         return ResponseEntity.ok().body(new CreateArticleResponseDto(articleId));

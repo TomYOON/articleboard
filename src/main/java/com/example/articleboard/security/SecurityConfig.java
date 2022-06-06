@@ -45,17 +45,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().antMatchers("/api/login/**", "api/member/**").permitAll();
+        http.authorizeRequests().antMatchers(UriConfig.LOGIN + "/**", UriConfig.Member.BASE + "/**").permitAll();
 
         //article
-        http.authorizeRequests().antMatchers("/api/articles/**").permitAll()
-                                .antMatchers(GET, "/api/article/**").permitAll()
-                                .antMatchers(POST, "/api/article/**").authenticated()
-                                .antMatchers(PUT, "/api/article/**").authenticated();
+        http.authorizeRequests().antMatchers(UriConfig.Article.BASE + "/**").permitAll()
+                                .antMatchers(GET, UriConfig.Article.BASE + "/**").permitAll()
+                                .antMatchers(POST, UriConfig.Article.BASE + "/**").authenticated()
+                                .antMatchers(PUT, UriConfig.Article.BASE + "/**").authenticated();
 
-        http.authorizeRequests().antMatchers("/api/members/**").hasAnyAuthority(Role.ADMIN.toString());
+//        http.authorizeRequests().antMatchers(UriConfig.Member.BASE + "/**").hasAnyAuthority(Role.ADMIN.toString());
 
-        http.authorizeRequests().antMatchers(DELETE, "/api/comment/**").authenticated();
+        http.authorizeRequests().antMatchers(DELETE, UriConfig.Comment.BASE + "/**").authenticated();
 //        http.authorizeRequests().anyRequest().authenticated();
 
         http.addFilter(customAuthenticationFilter);
