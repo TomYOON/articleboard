@@ -5,6 +5,8 @@ import com.example.articleboard.domain.Member;
 import com.example.articleboard.dto.LoginDto;
 import com.example.articleboard.dto.article.CreateArticleRequestDto;
 import com.example.articleboard.dto.article.CreateArticleResponseDto;
+import com.example.articleboard.dto.article.UpdateArticleRequestDto;
+import com.example.articleboard.dto.article.UpdateArticleResponseDto;
 import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.repository.ArticleRepository;
 import com.example.articleboard.repository.MemberRepository;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.Cookie;
+import javax.validation.constraints.NotEmpty;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -89,9 +92,9 @@ class ArticleApiControllerTest {
 
         Member member = memberRepository.findByUsername("user");
         String body = objectMapper.writeValueAsString(CreateArticleRequestDto.builder().memberId(member.getId()).subject(subject).content(content).build());
+        Cookie cookie = new Cookie(JwtTokenUtils.ACCESS_TOKEN_KEY, userAccessToken);
 
         //when
-        Cookie cookie = new Cookie(JwtTokenUtils.ACCESS_TOKEN_KEY, userAccessToken);
 
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(UriConfig.Article.BASE)
                         .content(body)
@@ -104,6 +107,70 @@ class ArticleApiControllerTest {
         //then
         CreateArticleResponseDto responseDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), CreateArticleResponseDto.class);
         long articleId = responseDto.getArticleId();
+        Article article = articleRepository.findOne(articleId);
+
+        assertEquals(subject, article.getSubject());
+        assertEquals(content, article.getContent());
+    }
+
+    @Test
+    @DisplayName("사용자가 본인의 게시글을 수정한다.")
+    public void 게시글_수정() throws Exception {
+        //given
+        String subject = "게시글 제목입니다.";
+        String content = "게시글 내용입니다.";
+        String updatedSubject = "수정된 게시글 제목";
+        String updatedContent = "수정된 게시글 내용";
+
+        Member member = memberRepository.findByUsername("user");
+        long articleId = articleService.write(member.getId(), subject, content);
+
+        String body = objectMapper.writeValueAsString(UpdateArticleRequestDto.builder().subject(updatedSubject).content(updatedContent).build());
+        Cookie cookie = new Cookie(JwtTokenUtils.ACCESS_TOKEN_KEY, userAccessToken);
+
+        //when
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(UriConfig.Article.BASE + UriConfig.Article.ARTICLE_ID, articleId)
+                        .content(body)
+                        .cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        UpdateArticleResponseDto responseDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), UpdateArticleResponseDto.class);
+        long updatedArticleId = responseDto.getArticleId();
+        Article article = articleRepository.findOne(updatedArticleId);
+
+        assertEquals(updatedSubject, article.getSubject());
+        assertEquals(updatedContent, article.getContent());
+    }
+
+    @Test
+    @DisplayName("사용자가 다른 사용자의 게시글을 수정하지 못한다.")
+    public void 게시글_수정_권한_없음() throws Exception {
+        //given
+        String subject = "게시글 제목입니다.";
+        String content = "게시글 내용입니다.";
+        String updatedSubject = "수정된 게시글 제목";
+        String updatedContent = "수정된 게시글 내용";
+
+        Member member = memberRepository.findByUsername("admin_user"); // admin으로 작성
+        long articleId = articleService.write(member.getId(), subject, content);
+
+        String body = objectMapper.writeValueAsString(UpdateArticleRequestDto.builder().subject(updatedSubject).content(updatedContent).build());
+        Cookie cookie = new Cookie(JwtTokenUtils.ACCESS_TOKEN_KEY, userAccessToken);
+
+        //when
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(UriConfig.Article.BASE + UriConfig.Article.ARTICLE_ID, articleId)
+                        .content(body)
+                        .cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+        //then
         Article article = articleRepository.findOne(articleId);
 
         assertEquals(subject, article.getSubject());
