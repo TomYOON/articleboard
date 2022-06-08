@@ -37,6 +37,10 @@ public class Article {
         setContent(content);
     }
 
+    public void delete() {
+        comments.forEach(Comment::deleteComment);
+    }
+
     //== 생성 메서드 ==//
     public static Article createArticle(Member member, String subject, String content) {
         Article article = new Article();

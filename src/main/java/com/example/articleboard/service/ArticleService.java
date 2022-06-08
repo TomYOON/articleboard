@@ -5,7 +5,6 @@ import com.example.articleboard.domain.Member;
 import com.example.articleboard.repository.ArticleRepository;
 import com.example.articleboard.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.ResourceAccessException;
@@ -22,7 +21,6 @@ public class ArticleService {
 
     @Transactional
     public Long write(Long memberId, String subject, String content) {
-
         Member member = memberRepository.findOne(memberId);
         Article article = Article.createArticle(member, subject, content);
 
@@ -54,5 +52,16 @@ public class ArticleService {
 
         article.updateArticle(subject, content);
         return article.getId();
+    }
+
+    @Transactional
+    public Long deleteArticle(Long articleId) {
+        Article article = articleRepository.findOne(articleId);
+        if (article == null) {
+            return null;
+        }
+        article.delete();
+        articleRepository.deleteArticle(article);
+        return articleId;
     }
 }

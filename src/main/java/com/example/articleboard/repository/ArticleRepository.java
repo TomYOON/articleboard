@@ -37,4 +37,8 @@ public class ArticleRepository {
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    public void deleteArticle(Article article) {
+        em.remove(article);
+    }
 }
