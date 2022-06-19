@@ -3,10 +3,7 @@ package com.example.articleboard.api;
 import com.example.articleboard.domain.Article;
 import com.example.articleboard.dto.article.*;
 import com.example.articleboard.env.UriConfig;
-import com.example.articleboard.security.JwtTokenUtils;
 import com.example.articleboard.service.ArticleService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +26,6 @@ public class ArticleApiController {
     @GetMapping
     public ResponseEntity<List<ArticleDto>> articles(@RequestParam(value = "offset", defaultValue = "0") int offset,
                                                     @RequestParam(value = "limit", defaultValue = "10") int limit) {
-
         List<Article> articles = articleService.findArticles(offset, limit);
         List<ArticleDto> articleDtos = articles.stream()
                 .map(a -> new ArticleDto(a))
@@ -78,6 +72,15 @@ public class ArticleApiController {
                 .map(a -> new ArticleDto(a))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(articleDtos);
+    }
+
+    @DeleteMapping(UriConfig.Article.ARTICLE_ID)
+    @ResponseBody
+    public ResponseEntity<DeleteArticleResponseDto> deleteArticle(@PathVariable("articleId") Long articleId,
+                                                                  Principal principal) {
+        Long memberId = Long.parseLong(principal.getName());
+        Long deletedArticleId = articleService.deleteArticle(articleId, memberId);
+        return ResponseEntity.ok().body(new DeleteArticleResponseDto(deletedArticleId));
     }
 
 }

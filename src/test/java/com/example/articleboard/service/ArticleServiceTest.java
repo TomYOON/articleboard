@@ -4,7 +4,6 @@ import com.example.articleboard.domain.Article;
 import com.example.articleboard.domain.Comment;
 import com.example.articleboard.domain.Member;
 import com.example.articleboard.repository.ArticleRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import org.springframework.web.client.ResourceAccessException;
 
 import javax.persistence.EntityManager;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -71,7 +69,7 @@ public class ArticleServiceTest {
         Comment comment2 = em.find(Comment.class, commentId2);
 
         //when
-        articleService.deleteArticle(articleId);
+        articleService.deleteArticle(articleId, member.getId());
         Article deletedArticle = articleRepository.findOne(articleId);
 
         //then
@@ -112,7 +110,7 @@ public class ArticleServiceTest {
         Article article = articleRepository.findOne(articleId);
 
         //when then
-        Assertions.assertThrows(ResourceAccessException.class, () -> {
+        assertThrows(ResourceAccessException.class, () -> {
             articleService.updateArticle(articleId, member.getId() + 1, updatedSubject, updatedContent);
         });
     }

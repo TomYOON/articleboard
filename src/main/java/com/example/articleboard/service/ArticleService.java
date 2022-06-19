@@ -4,7 +4,11 @@ import com.example.articleboard.domain.Article;
 import com.example.articleboard.domain.Member;
 import com.example.articleboard.repository.ArticleRepository;
 import com.example.articleboard.repository.MemberRepository;
+import com.example.articleboard.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.ResourceAccessException;
@@ -14,6 +18,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
@@ -55,13 +60,22 @@ public class ArticleService {
     }
 
     @Transactional
-    public Long deleteArticle(Long articleId) {
+    public Long deleteArticle(Long articleId, Long memberId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Article article = articleRepository.findOne(articleId);
         if (article == null) {
             return null;
         }
+
+        Member writer = article.getMember();
+
+        if (!AuthUtils.hasAdminRole(authentication) && writer.getId() != memberId) {
+            throw new ResourceAccessException("게시글의 작성자가 아닙니다.");
+        }
+
         article.delete();
         articleRepository.deleteArticle(article);
+
         return articleId;
     }
 }
