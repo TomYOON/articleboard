@@ -6,9 +6,13 @@ import com.example.articleboard.domain.Member;
 import com.example.articleboard.repository.ArticleRepository;
 import com.example.articleboard.repository.CommentRepository;
 import com.example.articleboard.repository.MemberRepository;
+import com.example.articleboard.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
 
@@ -55,37 +59,30 @@ public class CommentService {
     }
 
     /**
-     * 대댓글이 있거나 멤버가 태그된 댓글(대대댓글)은 데이터가 삭제되지 않고 isDeleted에 표시
+     * 대댓글이 있거나 멤버가 태그된 댓글(대대댓글)은 데이터가 삭제되지 않고 content를 삭제 후 isDeleted 표시
      * @param commentId
      * @return commentId
      */
     @Transactional
-    public Long deleteComment(Long commentId) {
+    public Long deleteComment(Long memberId, Long commentId) {
         Comment comment = commentRepository.findOne(commentId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if(comment == null) {
             return null;
         }
 
-        if (comment.getChildComments().isEmpty() && !isTaggedMemberComment(comment)) {
+        Member writer = comment.getMember();
+
+        if (!AuthUtils.hasAdminRole(authentication) && writer.getId() != memberId) {
+            throw new ResourceAccessException("댓글 삭제 권한이 없습니다.");
+        }
+
+        if (comment.isRemovable()) {
             commentRepository.delete(comment);
         } else {
-            comment.deleteComment();
+            comment.removeContent();
         }
         return commentId;
-    }
-
-    /**
-     * 해당 댓글의 작성자가 태그된지 확인
-     * @param comment
-     * @return
-     */
-    private boolean isTaggedMemberComment(Comment comment) {
-        Comment parentComment = comment.getParentComment();
-
-        if (parentComment == null) {
-            return false;
-        }
-        return parentComment.getChildComments().stream().anyMatch(c -> c.getTagMember() == comment.getMember());
     }
 }

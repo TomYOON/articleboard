@@ -4,21 +4,22 @@ import com.example.articleboard.domain.Article;
 import com.example.articleboard.domain.Comment;
 import com.example.articleboard.domain.Member;
 import com.example.articleboard.repository.CommentRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
 public class CommentServiceTest {
@@ -49,6 +50,7 @@ public class CommentServiceTest {
         assertEquals(member, comment.getMember());
         assertEquals(article, comment.getArticle());
         assertEquals(content, comment.getContent());
+        assertTrue(comment.getArticle().getComments().contains(comment));
     }
 
     @Test
@@ -77,11 +79,12 @@ public class CommentServiceTest {
         List<Comment> member2Comments = commentService.findCommentByMemberId(member2.getId(), 0, 10);
 
         //then
-        assertEquals("memberId로 조회한 댓글목록의 첫 번째는 최근에 작성한 댓글과 같아야 한다.", member1Comments.get(0), comment1);
-        assertEquals("memberId로 조회한 댓글목록의 첫 번째는 최근에 작성한 댓글과 같아야 한다.", member2Comments.get(0), comment2);
+        assertEquals(member1Comments.get(0), comment1);
+        assertEquals(member2Comments.get(0), comment2);
     }
 
-    @Test
+    @Test()
+    @DisplayName("대댓글이나 대대댓글이 없는 댓글만 삭제할 수 있다.")
     public void 댓글_삭제() throws Exception {
         //given
         Member member = Member.createMember("testEmail", "1234", "ts", null);
@@ -97,11 +100,20 @@ public class CommentServiceTest {
         //when
         Long commentId1 = commentService.write(member.getId(), article.getId(), null, null, content1);
         Comment comment1 = commentRepository.findOne(commentId1);
-        Long commentId2 = commentService.write(member.getId(), article.getId(), comment1.getId(), null, content1);
+        Long commentId2 = commentService.write(member.getId(), article.getId(), commentId1, null, content2);
         Comment comment2 = commentRepository.findOne(commentId2);
-        Long commentId3 = commentService.write(member.getId(), article.getId(), comment1.getId(), null, content1);
-        //then
+        Long commentId3 = commentService.write(member.getId(), article.getId(), comment2.getParentComment().getId(), comment2.getMember().getId(), content3);
 
+
+        commentService.deleteComment(member.getId(), commentId1);
+        commentService.deleteComment(member.getId(), commentId2);
+        commentService.deleteComment(member.getId(), commentId3);
+
+        Comment comment3 = commentRepository.findOne(commentId3);
+        //then
+        assertEquals(null, comment1.getContent());
+        assertEquals(null, comment2.getContent());
+        assertEquals(null, comment3);
     }
 
 

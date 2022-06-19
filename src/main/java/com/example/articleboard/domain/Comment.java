@@ -3,7 +3,6 @@ package com.example.articleboard.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -93,9 +92,24 @@ public class Comment {
     }
 
     //== 삭제 메서드 ==//
-    public void deleteComment() {
+    public void removeContent() {
         isDeleted = true;
         content = null;
     }
 
+    public boolean isRemovable() {
+        return this.getChildComments().isEmpty() && !isTaggedMemberComment();
+    }
+
+    /**
+     * 해당 댓글의 작성자가 태그된지 확인
+     */
+    private boolean isTaggedMemberComment() {
+        Comment parentComment = this.getParentComment();
+
+        if (parentComment == null) {
+            return false;
+        }
+        return parentComment.getChildComments().stream().anyMatch(c -> c.getTagMember() == this.getMember() && c != this);
+    }
 }
