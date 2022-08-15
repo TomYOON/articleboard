@@ -1,7 +1,7 @@
 package com.example.articleboard.security.filter;
 
 import com.example.articleboard.dto.LoginDto;
-import com.example.articleboard.security.JwtTokenUtils;
+import com.example.articleboard.security.JwtUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final JwtUtils jwtUtils;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -41,15 +41,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        String accessToken = jwtTokenUtils.createAccessToken(authentication);
-        String refreshToken = jwtTokenUtils.createRefreshToken(authentication);
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
+        String accessToken = jwtUtils.createAccessToken(authentication);
+        String refreshToken = jwtUtils.createRefreshToken(authentication);
 
-        jwtTokenUtils.setTokenInCookie(response, accessToken, refreshToken);
+        jwtUtils.setTokenInCookie(response, accessToken, refreshToken);
 
         Map<String, String> result = new HashMap<>();
         result.put("memberId", authentication.getName());
         response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), result);
+        objectMapper.writeValue(response.getOutputStream(), result);
     }
 }

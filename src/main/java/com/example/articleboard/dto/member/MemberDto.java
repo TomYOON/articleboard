@@ -13,13 +13,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
-@Builder
 public class MemberDto {
     @NonNull
     private Long memberId;
     @NonNull
     private String username;
-    @NonNull
     private String nick;
     @Nullable
     private String imgUrl;
@@ -29,5 +27,14 @@ public class MemberDto {
         username = member.getUsername();
         nick = member.getNick();
         imgUrl = member.getImgUrl();
+    }
+
+
+    @Builder
+    public MemberDto(@NonNull Long memberId, @NonNull String username, @NonNull String nick, @Nullable String imgUrl) {
+        this.memberId = memberId;
+        this.username = username;
+        this.nick = nick;
+        this.imgUrl = imgUrl;
     }
 }

@@ -5,7 +5,7 @@ import com.example.articleboard.dto.LoginDto;
 import com.example.articleboard.dto.JoinDto;
 import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.repository.MemberRepository;
-import com.example.articleboard.security.JwtTokenUtils;
+import com.example.articleboard.security.JwtUtils;
 import com.example.articleboard.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,12 +19,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -95,6 +93,6 @@ class MemberApiControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(cookie().exists(JwtTokenUtils.ACCESS_TOKEN_KEY));
+                .andExpect(cookie().exists(JwtUtils.ACCESS_TOKEN_KEY));
     }
 }

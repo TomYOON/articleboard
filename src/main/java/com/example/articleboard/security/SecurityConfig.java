@@ -1,6 +1,5 @@
 package com.example.articleboard.security;
 
-import com.example.articleboard.domain.Role;
 import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.security.filter.CustomAuthenticationFilter;
 import com.example.articleboard.security.filter.CustomAuthorizationFilter;
@@ -26,7 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final JwtUtils jwtUtils;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -36,12 +35,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), jwtTokenUtils);
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), jwtUtils);
         customAuthenticationFilter.setFilterProcessesUrl(UriConfig.LOGIN);
 
         http.logout()
             .logoutUrl(UriConfig.LOGOUT)
-            .deleteCookies(jwtTokenUtils.ACCESS_TOKEN_KEY, jwtTokenUtils.REFRESH_TOKEN_KEY);
+            .deleteCookies(jwtUtils.ACCESS_TOKEN_KEY, jwtUtils.REFRESH_TOKEN_KEY);
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -59,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        http.authorizeRequests().anyRequest().authenticated();
 
         http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(jwtTokenUtils), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new CustomAuthorizationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

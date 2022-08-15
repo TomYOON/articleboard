@@ -7,7 +7,7 @@ import com.example.articleboard.dto.article.*;
 import com.example.articleboard.env.UriConfig;
 import com.example.articleboard.repository.ArticleRepository;
 import com.example.articleboard.repository.MemberRepository;
-import com.example.articleboard.security.JwtTokenUtils;
+import com.example.articleboard.security.JwtUtils;
 import com.example.articleboard.service.ArticleService;
 import com.example.articleboard.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,7 +88,7 @@ class ArticleApiControllerTest {
         //given
         Member member = memberRepository.findByUsername("user");
         String body = objectMapper.writeValueAsString(CreateArticleRequestDto.builder().memberId(member.getId()).subject(subject).content(content).build());
-        Cookie cookie = new Cookie(JwtTokenUtils.ACCESS_TOKEN_KEY, userAccessToken);
+        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, userAccessToken);
 
         //when
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(UriConfig.Article.BASE)
@@ -119,7 +119,7 @@ class ArticleApiControllerTest {
         long articleId = articleService.write(member.getId(), subject, content);
 
         String body = objectMapper.writeValueAsString(UpdateArticleRequestDto.builder().subject(updatedSubject).content(updatedContent).build());
-        Cookie cookie = new Cookie(JwtTokenUtils.ACCESS_TOKEN_KEY, userAccessToken);
+        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, userAccessToken);
 
         //when
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(UriConfig.Article.BASE + UriConfig.Article.ARTICLE_ID, articleId)
@@ -150,7 +150,7 @@ class ArticleApiControllerTest {
         long articleId = articleService.write(member.getId(), subject, content);
 
         String body = objectMapper.writeValueAsString(UpdateArticleRequestDto.builder().subject(updatedSubject).content(updatedContent).build());
-        Cookie cookie = new Cookie(JwtTokenUtils.ACCESS_TOKEN_KEY, userAccessToken);
+        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, userAccessToken);
 
         //when
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(UriConfig.Article.BASE + UriConfig.Article.ARTICLE_ID, articleId)
@@ -175,7 +175,7 @@ class ArticleApiControllerTest {
         Member member = memberRepository.findByUsername("user");
         long articleId = articleService.write(member.getId(), subject, content);
 
-        Cookie cookie = new Cookie(JwtTokenUtils.ACCESS_TOKEN_KEY, userAccessToken);
+        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, userAccessToken);
 
         //when
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.delete(UriConfig.Article.BASE + UriConfig.Article.ARTICLE_ID, articleId)
@@ -198,7 +198,7 @@ class ArticleApiControllerTest {
         //given
         Member member = memberRepository.findByUsername("user");
         long articleId = articleService.write(member.getId(), subject, content);
-        Cookie cookie = new Cookie(JwtTokenUtils.ACCESS_TOKEN_KEY, adminAccessToken);
+        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, adminAccessToken);
 
         //when
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.delete(UriConfig.Article.BASE + UriConfig.Article.ARTICLE_ID, articleId)
@@ -222,10 +222,10 @@ class ArticleApiControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(cookie().exists(JwtTokenUtils.ACCESS_TOKEN_KEY))
+                .andExpect(cookie().exists(JwtUtils.ACCESS_TOKEN_KEY))
                 .andReturn();
 
-        Cookie cookie = mvcResult.getResponse().getCookie(JwtTokenUtils.ACCESS_TOKEN_KEY);
+        Cookie cookie = mvcResult.getResponse().getCookie(JwtUtils.ACCESS_TOKEN_KEY);
         return cookie.getValue();
     }
 

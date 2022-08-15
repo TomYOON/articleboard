@@ -2,11 +2,9 @@ package com.example.articleboard.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +20,6 @@ public class Article {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    @NotNull
     private Member member;
 
     private String subject;
@@ -38,7 +35,7 @@ public class Article {
     }
 
     public void delete() {
-        comments.forEach(Comment::deleteComment);
+        comments.forEach(Comment::removeContent);
     }
 
     //== 생성 메서드 ==//

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Getter
-public class JwtTokenUtils {
+public class JwtUtils {
 
     final Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); //TODO: secret은 따로 처리하여 보관해야됨
     final String issuer = "articleboard.example.com";

@@ -1,6 +1,7 @@
 package com.example.articleboard.security.filter;
 
-import com.example.articleboard.security.JwtTokenUtils;
+import com.example.articleboard.env.UriConfig;
+import com.example.articleboard.security.JwtUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,20 +26,20 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenUtils jwtTokenUtils;
+    private final JwtUtils jwtUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/member")) {
+        if (request.getServletPath().equals(UriConfig.LOGIN) || request.getServletPath().equals(UriConfig.Member.BASE)) {
             filterChain.doFilter(request, response);
         } else {
 
-            String token = jwtTokenUtils.getTokenInCookie(request.getCookies());
+            String token = jwtUtils.getTokenInCookie(request.getCookies());
 
             if (token != null) {
                 try {
-                    String username = jwtTokenUtils.getSubject(token);
-                    Collection<SimpleGrantedAuthority> authorities = jwtTokenUtils.getAuthorities(token);
+                    String username = jwtUtils.getSubject(token);
+                    Collection<SimpleGrantedAuthority> authorities = jwtUtils.getAuthorities(token);
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -48,7 +49,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     log.error("Error logging in: {}", exception.getMessage());
                     response.setHeader("error", exception.getMessage());
                     response.setStatus(FORBIDDEN.value());
-//                    response.sendError(FORBIDDEN.value());
                     Map<String, String> error = new HashMap<>();
                     error.put("error_message", exception.getMessage());
                     response.setContentType(APPLICATION_JSON_VALUE);
